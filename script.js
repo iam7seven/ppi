@@ -13,6 +13,7 @@ const letterSection = document.querySelector("#letterSection");
 const letterTextElement = document.querySelector("#letterText");
 const letterCursor = document.querySelector("#letterCursor");
 const bodyElement = document.body;
+const celebrationAudio = document.querySelector("#celebrationAudio");
 
 function enterFullscreen() {
   const root = document.documentElement;
@@ -261,6 +262,7 @@ function celebrate() {
     message.setAttribute("aria-hidden", "false");
   }
   launchConfetti();
+  playCelebrationAudio();
   revealCake();
 }
 
@@ -312,6 +314,7 @@ function revealCake() {
   isCakeCutting = false;
   isLetterStarted = false;
   disableLetterOverlay();
+  stopCelebrationAudio();
 }
 
 function handleCakeCut() {
@@ -374,12 +377,6 @@ function startLetterReveal() {
     letterCursor.classList.remove("letter__cursor--done");
   }
 
-  setTimeout(() => {
-    if (letterSection && !bodyElement?.classList.contains("letter-mode")) {
-      letterSection.scrollIntoView({ behavior: "smooth" });
-    }
-  }, LETTER_SCROLL_DELAY);
-
   typeLetterCharacter(0);
 }
 
@@ -400,6 +397,19 @@ function typeLetterCharacter(index) {
   }
 
   setTimeout(() => typeLetterCharacter(index + 1), LETTER_TYPE_DELAY);
+}
+
+function playCelebrationAudio() {
+  if (!celebrationAudio) return;
+  celebrationAudio.currentTime = 0;
+  celebrationAudio.volume = 1;
+  celebrationAudio.play().catch(() => {});
+}
+
+function stopCelebrationAudio() {
+  if (!celebrationAudio) return;
+  celebrationAudio.pause();
+  celebrationAudio.currentTime = 0;
 }
 
 jellyCat && jellyCat.addEventListener("mouseenter", handleTease);

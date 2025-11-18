@@ -720,8 +720,8 @@ body.letter-mode .jelly-cat {
   line-height: 1.8;
   margin: 0 auto;
   min-height: 8rem;
-  text-align: center;
-  width: 100%;
+  text-align: left;
+  width: min(820px, 100%);
 }
 
 .letter__cursor {
