@@ -48,38 +48,84 @@
     </div>
 
     <main class="canvas" aria-busy="true">
-      <div
-        id="jellyCat"
-        class="jelly-cat"
-        role="button"
-        tabindex="0"
-        aria-label="Try to catch Jelly the cat"
-        aria-controls="message"
-        aria-description="Jelly the cat keeps running away until you catch them"
-      >
-        <img
-          src="jelly.png"
-          alt="Jelly the cat"
-          class="jelly-cat__image"
-          aria-hidden="true"
-          decoding="async"
-        />
-        <span
-          id="jellyCatTease"
-          class="jelly-cat__tease"
+      <div class="canvas__panel canvas__panel--left">
+        <p class="canvas__label">Catch Jelly to unlock the wish</p>
+        <div
+          id="jellyCat"
+          class="jelly-cat"
+          role="button"
+          tabindex="0"
+          aria-label="Try to catch Jelly the cat"
+          aria-controls="message"
+          aria-description="Jelly the cat keeps running away until you catch them"
+        >
+          <img
+            src="jelly.png"
+            alt="Jelly the cat"
+            class="jelly-cat__image"
+            aria-hidden="true"
+            decoding="async"
+          />
+          <span
+            id="jellyCatTease"
+            class="jelly-cat__tease"
+            aria-live="polite"
+          ></span>
+        </div>
+        <p
+          id="message"
+          class="message"
           aria-live="polite"
-        ></span>
+          aria-hidden="true"
+        >
+          Happy Birthday! 🎉
+        </p>
       </div>
-      <p
-        id="message"
-        class="message"
-        aria-live="polite"
-        aria-hidden="true"
-      >
-        Happy Birthday! 🎉
-      </p>
+
+      <div class="canvas__panel canvas__panel--right">
+        <section
+          id="cakeSection"
+          class="cake"
+          aria-live="polite"
+          aria-hidden="true"
+        >
+          <div class="cake__scene" aria-hidden="true">
+            <div class="cake__plate"></div>
+            <div class="cake__layer cake__layer--bottom"></div>
+            <div class="cake__layer cake__layer--middle"></div>
+            <div class="cake__layer cake__layer--top">
+              <span class="cake__frosting"></span>
+              <span class="cake__candle">
+                <span class="cake__flame"></span>
+              </span>
+            </div>
+            <div class="cake__slice"></div>
+            <div class="cake__knife"></div>
+          </div>
+          <button id="cakeButton" class="cake__button" type="button" disabled>
+            Cut the Cake
+          </button>
+          <p
+            id="cakeMessage"
+            class="cake__message"
+            aria-live="polite"
+            aria-hidden="true"
+          ></p>
+        </section>
+      </div>
       <div class="confetti" aria-hidden="true"></div>
     </main>
+
+    <section
+      id="letterSection"
+      class="letter letter--hidden"
+      aria-live="polite"
+    >
+      <div class="letter__paper">
+        <p id="letterText" class="letter__text"></p>
+        <span id="letterCursor" class="letter__cursor" aria-hidden="true"></span>
+      </div>
+    </section>
 
     <script src="script.js" defer></script>
   </body>
