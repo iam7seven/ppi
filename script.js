@@ -14,6 +14,11 @@ const letterTextElement = document.querySelector("#letterText");
 const letterCursor = document.querySelector("#letterCursor");
 const bodyElement = document.body;
 const celebrationAudio = document.querySelector("#celebrationAudio");
+const audioToggle = document.querySelector("#audioToggle");
+let celebrationAudioPrimed = false;
+let isAudioMuted = false;
+let wasAudioRequested = false;
+const CELEBRATION_VOLUME = 0.5;
 
 function enterFullscreen() {
   const root = document.documentElement;
@@ -40,8 +45,8 @@ function enterFullscreen() {
 const TEASE_LIMIT = 10;
 const TEASE_PROXIMITY = 90;
 const ASSETS_TO_PRELOAD = ["jelly.png"];
-const MIN_LOADING_MS = 1200;
-const CAKE_ANIMATION_DURATION = 1500;
+const MIN_LOADING_MS = 2200;
+const CAKE_ANIMATION_DURATION = 2200;
 const LETTER_TEXT = `Chúc mừng sinh nhật em.
 Anh không biết phải diễn tả thế nào cho thật hoàn hảo, nhưng sự xuất hiện của em đã khiến cuộc sống của anh thay đổi theo những cách mà có lẽ em sẽ chẳng bao giờ hiểu hết.
 
@@ -56,8 +61,8 @@ Dù xa hay gần, anh vẫn luôn ở đây, âm thầm ủng hộ và mong em h
 Chúc mừng sinh nhật em… Anh hy vọng hôm nay sẽ đặc biệt như chính em vậy.”
 
 ~seven`;
-const LETTER_TYPE_DELAY = 35;
-const LETTER_SCROLL_DELAY = 600;
+const LETTER_TYPE_DELAY = 65;
+const LETTER_SCROLL_DELAY = 900;
 
 const TEASE_LINES = [
   "Can't catch a jelly!",
@@ -314,7 +319,6 @@ function revealCake() {
   isCakeCutting = false;
   isLetterStarted = false;
   disableLetterOverlay();
-  stopCelebrationAudio();
 }
 
 function handleCakeCut() {
@@ -401,15 +405,68 @@ function typeLetterCharacter(index) {
 
 function playCelebrationAudio() {
   if (!celebrationAudio) return;
+  wasAudioRequested = true;
+  celebrationAudio.loop = true;
+  if (isAudioMuted) {
+    celebrationAudio.pause();
+    celebrationAudio.currentTime = 0;
+    return;
+  }
   celebrationAudio.currentTime = 0;
-  celebrationAudio.volume = 1;
+  celebrationAudio.volume = CELEBRATION_VOLUME;
   celebrationAudio.play().catch(() => {});
 }
 
-function stopCelebrationAudio() {
-  if (!celebrationAudio) return;
-  celebrationAudio.pause();
-  celebrationAudio.currentTime = 0;
+function primeCelebrationAudio() {
+  if (celebrationAudioPrimed || !celebrationAudio) return;
+  celebrationAudioPrimed = true;
+  celebrationAudio.volume = 0;
+  celebrationAudio.loop = true;
+  celebrationAudio.muted = false;
+  celebrationAudio
+    .play()
+    .then(() => {
+      celebrationAudio.pause();
+      celebrationAudio.currentTime = 0;
+      celebrationAudio.volume = CELEBRATION_VOLUME;
+      celebrationAudio.muted = isAudioMuted;
+    })
+    .catch(() => {
+      celebrationAudioPrimed = false;
+      celebrationAudio.volume = CELEBRATION_VOLUME;
+      celebrationAudio.muted = isAudioMuted;
+    });
+}
+
+function updateAudioToggleUI() {
+  if (!audioToggle) return;
+  audioToggle.classList.toggle("audio-toggle--muted", isAudioMuted);
+  audioToggle.setAttribute("aria-pressed", isAudioMuted ? "true" : "false");
+  audioToggle.setAttribute(
+    "aria-label",
+    isAudioMuted ? "Unmute background music" : "Mute background music"
+  );
+}
+
+function toggleAudioMuted() {
+  setAudioMuted(!isAudioMuted);
+}
+
+function setAudioMuted(muted) {
+  if (isAudioMuted === muted) return;
+  isAudioMuted = muted;
+  if (celebrationAudio) {
+    celebrationAudio.muted = muted;
+    if (muted) {
+      celebrationAudio.pause();
+    } else if (wasAudioRequested) {
+      celebrationAudio.currentTime = 0;
+      celebrationAudio.volume = CELEBRATION_VOLUME;
+      celebrationAudio.loop = true;
+      celebrationAudio.play().catch(() => {});
+    }
+  }
+  updateAudioToggleUI();
 }
 
 jellyCat && jellyCat.addEventListener("mouseenter", handleTease);
@@ -466,6 +523,7 @@ function beginGame() {
   if (hasStarted) return;
   hasStarted = true;
   enterFullscreen();
+  primeCelebrationAudio();
   if (startButton) {
     startButton.setAttribute("disabled", "true");
   }
@@ -499,4 +557,10 @@ if (startButton) {
 if (cakeButton) {
   cakeButton.addEventListener("click", handleCakeCut);
 }
+
+if (audioToggle) {
+  audioToggle.addEventListener("click", toggleAudioMuted);
+}
+
+updateAudioToggleUI();
 
