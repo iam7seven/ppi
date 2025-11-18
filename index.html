@@ -31,7 +31,8 @@
         <p class="start-screen__title">Hello are you ready to be surprised?</p>
         <p class="start-screen__text">click here</p>
         <button id="startButton" class="start-screen__button">
-          🎉🎊🥳
+          <span class="start-button__emoji" aria-hidden="true">🎉🎊🥳</span>
+          <span class="start-button__text">Start the Celebration</span>
         </button>
       </div>
     </div>
@@ -141,7 +142,13 @@
       >
     </button>
 
-    <audio id="celebrationAudio" src="birthday.mp3" preload="auto"></audio>
+    <audio
+      id="celebrationAudio"
+      src="birthday.mp3"
+      preload="auto"
+      playsinline
+      aria-hidden="true"
+    ></audio>
 
     <script src="script.js" defer></script>
   </body>

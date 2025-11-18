@@ -24,6 +24,7 @@ body {
   color: #1d1b28;
   padding: clamp(1rem, 4vw, 2.5rem);
   transition: background 300ms ease;
+  cursor: url("cursor.ani"), auto;
 }
 
 body.letter-mode {
@@ -235,6 +236,10 @@ body.letter-mode .jelly-cat {
   cursor: pointer;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
   transition: transform 150ms ease, box-shadow 150ms ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .start-screen__button:hover {
@@ -245,6 +250,16 @@ body.letter-mode .jelly-cat {
 .start-screen__button:focus-visible {
   outline: 3px dashed #f25c8d;
   outline-offset: 6px;
+}
+
+.start-button__emoji {
+  font-size: clamp(1.8rem, 6vw, 2.4rem);
+  line-height: 1;
+}
+
+.start-button__text {
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
 }
 
 .loading-screen__spinner {

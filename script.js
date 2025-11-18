@@ -414,15 +414,18 @@ function playCelebrationAudio() {
   }
   celebrationAudio.currentTime = 0;
   celebrationAudio.volume = CELEBRATION_VOLUME;
+  celebrationAudio.muted = false;
   celebrationAudio.play().catch(() => {});
 }
 
 function primeCelebrationAudio() {
   if (celebrationAudioPrimed || !celebrationAudio) return;
   celebrationAudioPrimed = true;
+  const previousVolume = celebrationAudio.volume;
+  const previousMuted = celebrationAudio.muted;
   celebrationAudio.volume = 0;
   celebrationAudio.loop = true;
-  celebrationAudio.muted = false;
+  celebrationAudio.muted = true;
   celebrationAudio
     .play()
     .then(() => {
@@ -433,8 +436,8 @@ function primeCelebrationAudio() {
     })
     .catch(() => {
       celebrationAudioPrimed = false;
-      celebrationAudio.volume = CELEBRATION_VOLUME;
-      celebrationAudio.muted = isAudioMuted;
+      celebrationAudio.volume = previousVolume;
+      celebrationAudio.muted = previousMuted;
     });
 }
 
@@ -460,6 +463,7 @@ function setAudioMuted(muted) {
     if (muted) {
       celebrationAudio.pause();
     } else if (wasAudioRequested) {
+      celebrationAudio.muted = false;
       celebrationAudio.currentTime = 0;
       celebrationAudio.volume = CELEBRATION_VOLUME;
       celebrationAudio.loop = true;
