@@ -3,9 +3,15 @@ const teaseBubble = document.querySelector("#jellyCatTease");
 const message = document.querySelector("#message");
 const confettiLayer = document.querySelector(".confetti");
 const canvas = document.querySelector(".canvas");
+const loadingScreen = document.querySelector(".loading-screen");
+const startScreen = document.querySelector(".start-screen");
+const startButton = document.querySelector("#startButton");
 
-const TEASE_LIMIT = 6;
+const TEASE_LIMIT = 10;
 const TEASE_PROXIMITY = 90;
+const ASSETS_TO_PRELOAD = ["jelly.png"];
+const MIN_LOADING_MS = 1200;
+
 const TEASE_LINES = [
   "Can't catch a jelly!",
   "Too slow! 🐾",
@@ -15,9 +21,69 @@ const TEASE_LINES = [
   "Still here... somewhere!",
   "Jelly vanishes again!",
   "Almost! try again!",
+  "I slip through paws like jelly!",
+  "Did you just blink?",
+  "Faster fingers please!",
+  "Is that the best chase?",
+  "Jelly hack: move like water!",
+  "Mission jelly-impossible!",
+  "Nice try, human!",
+  "You'll need nine lives for this.",
+  "Paws-itively untouchable!",
+  "Guess again, whisker-buddy!",
+  "Oops, wrong spot!",
+  "Your cursor is adorable tho!",
 ];
+
 let teaseCount = 0;
 let teaseLineIndex = 0;
+let isGameReady = false;
+let hasStarted = false;
+let hasCelebrated = false;
+let loadingStartTime = null;
+
+function preloadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(src);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+function preloadAssets() {
+  if (!ASSETS_TO_PRELOAD.length) return Promise.resolve();
+  return Promise.all(ASSETS_TO_PRELOAD.map(preloadImage));
+}
+
+function showLoadingScreen() {
+  if (!loadingScreen) return;
+  loadingScreen.classList.remove("loading-screen--gone");
+  requestAnimationFrame(() => {
+    loadingScreen.classList.remove("loading-screen--hidden");
+  });
+}
+
+function hideLoadingScreen() {
+  if (!loadingScreen) return;
+  loadingScreen.classList.add("loading-screen--hidden");
+  setTimeout(() => {
+    loadingScreen.classList.add("loading-screen--gone");
+  }, 260);
+}
+
+function dismissStartScreen() {
+  if (!startScreen) return;
+  startScreen.classList.add("start-screen--hidden");
+  setTimeout(() => startScreen.classList.add("start-screen--gone"), 300);
+}
+
+function markGameReady() {
+  isGameReady = true;
+  jellyCat?.classList.add("jelly-cat--ready");
+  canvas?.setAttribute("aria-busy", "false");
+}
+
 function launchConfetti() {
   if (!confettiLayer) return;
 
@@ -82,15 +148,25 @@ function resetCharacterPosition() {
 }
 
 function handleTease(event) {
-  if (teaseCount >= TEASE_LIMIT) return;
+  if (!isGameReady || hasCelebrated) return;
+  if (teaseCount >= TEASE_LIMIT) {
+    scheduleCelebrate();
+    return;
+  }
   if (jellyCat?.classList.contains("jelly-cat--teasing")) return;
   teaseCount += 1;
   teaseCharacter();
   event?.preventDefault?.();
   event?.stopPropagation?.();
+
+  if (teaseCount >= TEASE_LIMIT) {
+    scheduleCelebrate();
+  }
 }
 
 function celebrate() {
+  if (!isGameReady || hasCelebrated) return;
+  hasCelebrated = true;
   resetCharacterPosition();
   jellyCat?.classList.add("jelly-cat--settled");
   showTeaseLine("Fine, you win!");
@@ -99,21 +175,32 @@ function celebrate() {
   launchConfetti();
 }
 
+function scheduleCelebrate() {
+  if (hasCelebrated) return;
+  if (jellyCat?.classList.contains("jelly-cat--teasing")) {
+    setTimeout(scheduleCelebrate, 80);
+    return;
+  }
+  celebrate();
+}
+
 jellyCat?.addEventListener("mouseenter", handleTease);
 jellyCat?.addEventListener("focus", handleTease);
 
 jellyCat?.addEventListener("click", (event) => {
+  if (hasCelebrated) return;
   if (teaseCount < TEASE_LIMIT) {
     handleTease(event);
     return;
   }
 
-  celebrate();
+  scheduleCelebrate();
 });
 
 jellyCat?.addEventListener("pointerenter", handleTease);
 
 jellyCat?.addEventListener("keydown", (event) => {
+  if (hasCelebrated) return;
   const isActivateKey = event.key === "Enter" || event.key === " ";
   if (!isActivateKey) return;
 
@@ -123,11 +210,12 @@ jellyCat?.addEventListener("keydown", (event) => {
     return;
   }
 
-  celebrate();
+  scheduleCelebrate();
 });
 
 canvas?.addEventListener("pointermove", (event) => {
-  if (!jellyCat || teaseCount >= TEASE_LIMIT) return;
+  if (!jellyCat || !isGameReady || hasCelebrated || teaseCount >= TEASE_LIMIT)
+    return;
 
   const catRect = jellyCat.getBoundingClientRect();
   const nearX =
@@ -141,3 +229,29 @@ canvas?.addEventListener("pointermove", (event) => {
     handleTease();
   }
 });
+
+function beginGame() {
+  if (hasStarted) return;
+  hasStarted = true;
+  startButton?.setAttribute("disabled", "true");
+  dismissStartScreen();
+  showLoadingScreen();
+  canvas?.setAttribute("aria-busy", "true");
+  loadingStartTime = performance.now();
+
+  preloadAssets()
+    .catch(() => {
+      // Even if preloading fails, allow the game to start instead of blocking the user.
+    })
+    .finally(() => {
+      const elapsed = performance.now() - (loadingStartTime ?? 0);
+      const delay = Math.max(MIN_LOADING_MS - elapsed, 0);
+
+      setTimeout(() => {
+        markGameReady();
+        hideLoadingScreen();
+      }, delay);
+    });
+}
+
+startButton?.addEventListener("click", beginGame);

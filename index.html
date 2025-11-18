@@ -20,7 +20,34 @@
     />
   </head>
   <body>
-    <main class="canvas">
+    <div class="start-screen" aria-live="polite">
+      <div class="start-screen__inner">
+        <img
+          src="jelly.png"
+          alt="Jelly is ready to play"
+          class="start-screen__image"
+          decoding="async"
+        />
+        <p class="start-screen__title">Meet Jelly the tease cat!</p>
+        <p class="start-screen__text">Tap the button to start the chase.</p>
+        <button id="startButton" class="start-screen__button">
+          Start Playing
+        </button>
+      </div>
+    </div>
+
+    <div
+      class="loading-screen loading-screen--hidden loading-screen--gone"
+      role="status"
+      aria-live="polite"
+    >
+      <div class="loading-screen__inner">
+        <div class="loading-screen__spinner" aria-hidden="true"></div>
+        <p class="loading-screen__text">Warming up Jelly...</p>
+      </div>
+    </div>
+
+    <main class="canvas" aria-busy="true">
       <div
         id="jellyCat"
         class="jelly-cat"

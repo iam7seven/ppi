@@ -38,6 +38,132 @@ body {
   overflow: hidden;
 }
 
+.start-screen,
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at top, #ffe4f0, #fef9ff 65%, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 20;
+  transition: opacity 250ms ease;
+}
+
+.start-screen {
+  z-index: 30;
+  text-align: center;
+}
+
+.start-screen__inner,
+.loading-screen__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  text-align: center;
+}
+
+.start-screen__image {
+  width: min(45vw, 220px);
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 50%;
+  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.2));
+}
+
+.start-screen__title {
+  font-family: "Baloo 2", cursive;
+  font-size: clamp(2rem, 6vw, 3rem);
+  color: #f25c8d;
+  margin: 0;
+}
+
+.start-screen__text {
+  font-size: 1rem;
+  color: #1d1b28;
+  margin: 0;
+}
+
+.start-screen__button {
+  margin-top: 0.5rem;
+  border: none;
+  border-radius: 999px;
+  background: #1d1b28;
+  color: #fff;
+  padding: 0.9rem 2.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.start-screen__button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 25px 35px rgba(0, 0, 0, 0.26);
+}
+
+.start-screen__button:focus-visible {
+  outline: 3px dashed #f25c8d;
+  outline-offset: 6px;
+}
+
+.loading-screen__spinner {
+  width: 64px;
+  height: 64px;
+  border: 6px solid rgba(242, 92, 141, 0.2);
+  border-top-color: #f25c8d;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+.loading-screen__text {
+  font-family: "Baloo 2", cursive;
+  font-size: 1.75rem;
+  color: #f25c8d;
+  margin: 0;
+}
+
+.start-screen__inner {
+  gap: 1.1rem;
+}
+
+.loading-screen__inner {
+  gap: 1rem;
+}
+
+.start-screen--hidden,
+.loading-screen--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.start-screen--gone,
+.loading-screen--gone {
+  display: none;
+}
+
+.loading-screen--hidden .loading-screen__spinner {
+  animation-play-state: paused;
+}
+
+.loading-screen--hidden .loading-screen__text {
+  opacity: 0;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .jelly-cat {
   width: min(26vw, 140px);
   aspect-ratio: 1;
@@ -49,10 +175,17 @@ body {
   font-size: clamp(2rem, 6vw, 3rem);
   cursor: pointer;
   position: relative;
-  transition: none;
+  opacity: 0;
+  transition: opacity 120ms ease-out;
   user-select: none;
   background: transparent;
   box-shadow: none;
+  pointer-events: none;
+}
+
+.jelly-cat--ready {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .jelly-cat::after {
