@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Birthday!</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&family=Montserrat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="canvas">
+      <div
+        id="jellyCat"
+        class="jelly-cat"
+        role="button"
+        tabindex="0"
+        aria-label="Try to catch Jelly the cat"
+        aria-controls="message"
+        aria-description="Jelly the cat keeps running away until you catch them"
+      >
+        <img
+          src="jelly.png"
+          alt="Jelly the cat"
+          class="jelly-cat__image"
+          aria-hidden="true"
+          decoding="async"
+        />
+        <span
+          id="jellyCatTease"
+          class="jelly-cat__tease"
+          aria-live="polite"
+        ></span>
+      </div>
+      <p
+        id="message"
+        class="message"
+        aria-live="polite"
+        aria-hidden="true"
+      >
+        Happy Birthday! 🎉
+      </p>
+      <div class="confetti" aria-hidden="true"></div>
+    </main>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
